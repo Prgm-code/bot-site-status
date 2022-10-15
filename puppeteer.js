@@ -1,10 +1,38 @@
+const {filterArray} = require('./data.js')
 const dotenv = require('dotenv');
 dotenv.config();
 
+const {Telegraf} = require('telegraf');
 const puppeteer = require('puppeteer');
 const randomUseragent = require('random-useragent');
 const util = require('util');
 const timer = util.promisify(setTimeout);
+
+const bot = new Telegraf(process.env.BOT_TOKEN);
+let sendMessage = async function(text,ctx) {
+    try {
+                
+        await bot.telegram.sendMessage(ctx.chat.id ,text)
+    } 
+    catch(e) 
+    {
+        console.log(e);
+    }
+};
+
+let sendphoto = async function(ctx) {
+    try {
+                
+        await bot.telegram.sendPhoto(ctx.chat.id ,{source: 'site.png'})
+    } 
+    catch(e) 
+    {
+        console.log(e);
+    }
+};
+
+
+
 
 const header = randomUseragent.getRandom(function (ua) {
     return ua.browserName === 'Firefox';
@@ -41,7 +69,7 @@ const reload = async function (ctx) {
 
                 const font = element.innerText;
                 
-                if (font == 10) {
+                if (font == 13) {
         
                     
                     
@@ -50,7 +78,7 @@ const reload = async function (ctx) {
             }
             if (i > 0) {
                 data.push(element.innerText);
-                if (data.length == 17 && data[0] == '10') {
+                if (data.length == 17 && data[0] == '13' && data[3].length > 5)  {
 
 
                     arr.push(data);
@@ -67,13 +95,13 @@ const reload = async function (ctx) {
     console.log('resulrtado') ;
     console.log(extratedElements); 
         for (let i = 0; i < extratedElements.length; i++) {
-            let text = '';  
-            for (let j = 0; j < extratedElements[i].length; j++) {
-                text += extratedElements[i][j] + ' ';
-                console.log(text);
-            }
+            let text = filterArray(extratedElements[i]);  
+          
             await timer(3000);
-            await sendMessage(text, ctx);
+            
+            let msg = util.inspect(text, {showHidden: false, depth: null,  compact: false});
+            console.log(msg);
+            await sendMessage(msg, ctx);
         }
 
         

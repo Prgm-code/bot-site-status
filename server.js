@@ -77,7 +77,33 @@ bot.command(['check', 'Check'], ctx => {
     ctx.reply('checking site... whait a moment');
 });
 
+let x ={
+    site: 'site',
+    region: 'region',
+    comuna: 'comuna',
+    sitio: 'sitio',
+    codigo: 'codigo',
+    oos: 'oos',
+    ic1: 'ic1',
 
+    vip: 'vip',
+    localidad: 'localidad',
+    bandas2g: 'bandas2g',
+    tecnologias3g: 'tecnologias3g',
+    tecnologiaslte: 'tecnologiaslte',
+    afectacion2g: 'afectacion2g',
+    afectacion3g: 'afectacion3g',
+    afectacionlte: 'afectacionlte',
+    porcentajeafectacion2g: 'porcentajeafectacion2g',
+    porcentajeafectacion3g: 'porcentajeafectacion3g',
+    porcentajeafectacionlte: 'porcentajeafectacionlte',
+}
+
+bot.command(['test', 'Test'], ctx => {
+    
+    let message= util.inspect(x, {compact: false, depth: 2});
+    ctx.reply(message);
+});
 
 
 
