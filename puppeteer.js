@@ -8,6 +8,8 @@ const randomUseragent = require('random-useragent');
 const util = require('util');
 const timer = util.promisify(setTimeout);
 
+let region = 10;
+
 const bot = new Telegraf(process.env.BOT_TOKEN);
 let sendMessage = async function(text,ctx) {
     try {
@@ -69,7 +71,7 @@ const reload = async function (ctx) {
 
                 const font = element.innerText;
                 
-                if (font == 13) {
+                if (font == region) {
         
                     
                     
@@ -78,7 +80,7 @@ const reload = async function (ctx) {
             }
             if (i > 0) {
                 data.push(element.innerText);
-                if (data.length == 17 && data[0] == '13' && data[3].length > 5)  {
+                if (data.length == region && data[0] == '13' && data[3].length > 5)  {
 
 
                     arr.push(data);
