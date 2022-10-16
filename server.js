@@ -1,4 +1,4 @@
-const { reload, sitequery } = require('./puppeteer.js');
+const { reload, sitequery , status , shortStatus} = require('./puppeteer.js');
 const { bot, sendMessage } = require('./telegraf.js');
 
 const util = require('util');
@@ -57,8 +57,17 @@ bot.command(['check', 'Check'], ctx => {
     sitequery(ctx, (ctx.message.text).slice(7));
     ctx.reply('checking site... whait a moment');
 });
+bot.command(['status', 'Status'], (ctx) => {
+    status(ctx);
+    
 
+});
 
+bot.command(['shortstatus', 'Shorttatus'], (ctx) => {
+    shortStatus(ctx);
+    
+
+});
 //// codigo de prueba 
 
 let x = {
@@ -87,6 +96,10 @@ bot.command(['test', 'Test'], ctx => {
 
     let message = util.inspect(x, { compact: false, depth: 2 });
     ctx.reply(message);
+});
+
+bot.command(['help', 'Help'], ctx => {
+    ctx.reply('commands: \n /monitor \n /check [Site_code]\n /status \n /shortstatus \n /test \n /help');
 });
 
 

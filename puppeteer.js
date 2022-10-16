@@ -1,7 +1,8 @@
-const { filterArray,sitesCanceled } = require('./data.js')
+const { filterArray, sitesCanceled } = require('./data.js')
 const dotenv = require('dotenv');
 dotenv.config();
 const util = require('util');
+const localStorage = require('localStorage');
 
 const { sendMessage, sendArr, sendPhoto } = require('./telegraf.js');
 const puppeteer = require('puppeteer');
@@ -97,9 +98,10 @@ const reload = async function (ctx) {
 
     let sitesCancel = sitesCanceled();
 
-    if (sitesCancel !== undefined && sitesCancel.length > 0)   {  
+    if (sitesCancel !== undefined && sitesCancel.length > 0) {
         await sendMessage('Sitios OOS Cancelados ', ctx);
-        await sendArr(sitesCancel, ctx) }
+        await sendArr(sitesCancel, ctx)
+    }
 
 
     await browser.close();
@@ -130,5 +132,61 @@ const sitequery = async function (ctx, site) {
 
 };
 
-exports.reload = reload;
-exports.sitequery = sitequery;
+let status = function (ctx) {
+    let sitesOOS = JSON.parse(localStorage.getItem('siteOOS')) ?? {};
+    console.log(sitesOOS);
+
+    let sitesValue = Object.values(sitesOOS);
+    console.log(sitesValue);
+
+
+    let sitesKey = Object.keys(sitesOOS);
+    console.log(sitesKey);
+    let sites = [];
+
+    for (let i = 0; i < sitesValue.length; i++) {
+        
+        sites.push(
+            util.inspect(sitesValue[i], { showHidden: false, depth: null, compact: false }));
+        
+    }
+    if (sites.length > 0) {
+        sendMessage('Sitios OOS', ctx);
+        sendArr(sites, ctx);
+    }
+    else {
+        sendMessage('No hay sitios OOS', ctx);
+    }
+    return;
+};
+
+let shortStatus = function (ctx) {
+    let sitesOOS = JSON.parse(localStorage.getItem('siteOOS')) ?? {};
+    console.log(sitesOOS);
+
+    let sitesValue = Object.values(sitesOOS);
+    console.log(sitesValue);
+    
+    let sitesKey = Object.keys(sitesOOS);
+    console.log(sitesKey);
+    let sites = [];
+    
+    for (let i = 0; i < sitesValue.length; i++) {
+
+        sites.push(
+            util.inspect(sitesKey[i], { showHidden: false, depth: null, compact: false }));
+
+    }
+    if (sites.length > 0) {
+        sendMessage('Sitios OOS', ctx); 
+        sendArr(sites, ctx);
+    }
+    else {
+        sendMessage('No hay sitios OOS', ctx);
+    }
+    return;
+};
+
+
+module.exports = { reload, sitequery, status, shortStatus };
+
