@@ -78,37 +78,29 @@ const sitesCanceled = function () {
     let sitesCancel = keysitesOOS.filter(function (el) {
         return !newOOSSites.includes(el);   
     });
+    
     console.log('listando sitios cancelados');
     console.log(sitesCancel);
 
-    
+    let siteCancelOOS = [];
 
     for (let i= 0 ; i < sitesCancel.length; i++) {
         let site = sitesCancel[i];
         let sitesOOS = JSON.parse(localStorage.getItem('siteOOS'));
+        let siteOOS = [sitesOOS[site][3],sitesOOS[site][2]];
+        console.log(siteOOS);
         delete sitesOOS[site];
+        let msg = util.inspect(siteOOS, { showHidden: false, depth: null, compact: false });
+        siteCancelOOS.push(msg);
         localStorage.setItem('siteOOS', JSON.stringify(sitesOOS));
        
     }
+    console.log('sitesCancelOOS', siteCancelOOS);
     console.log('sitios en localstorage');
     console.log(Object.keys(JSON.parse(localStorage.getItem('siteOOS'))));
     newOOSSites = [];
-    return sitesCancel;
-
-
-    /* for (let i = 0; i < keysitesOOS.length; i++) {
-        if (!newOssSites.includes(keysitesOOS[i])) {
-            console.log(keysitesOOS[i]);
-
-
-
-            let sitesOOS = JSON.parse(localStorage.getItem('siteOOS'));
-            delete sitesOOS[keysitesOOS[i]];
-            localStorage.setItem('siteOOS', JSON.stringify(site));
-        }
-    }
-     */
-
+ 
+    return siteCancelOOS;
     
 
 }

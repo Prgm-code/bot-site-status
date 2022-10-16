@@ -15,11 +15,9 @@ let sendArr = async function(arr,ctx) {
 
         for (let i = 0; i < arr.length; i ++) {
             await bot.telegram.sendMessage(ctx.chat.id ,arr[i])
-            await timer(3000);
+            await timer(1500);
 
-        }
-        
-                
+        }       
         
     } 
     catch(e) 

@@ -27,7 +27,7 @@ const monitorStart = async function (ctx) {
     let time = new Date().toLocaleString();
 
     console.log('Monitor Start' + time);
-    await sendMessage( 'Monitor Start' + time, ctx);
+    //await sendMessage( 'Monitor Start' + time, ctx);
     await reload(ctx);
     console.log('reload');
     await timer(60 * 1000 * 5);
