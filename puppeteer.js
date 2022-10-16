@@ -1,35 +1,14 @@
-const {filterArray} = require('./data.js')
+const { filterArray,sitesCanceled } = require('./data.js')
 const dotenv = require('dotenv');
 dotenv.config();
+const util = require('util');
 
-const {Telegraf} = require('telegraf');
+const { sendMessage, sendArr, sendPhoto } = require('./telegraf.js');
 const puppeteer = require('puppeteer');
 const randomUseragent = require('random-useragent');
-const util = require('util');
-const timer = util.promisify(setTimeout);
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
-let sendMessage = async function(text,ctx) {
-    try {
-                
-        await bot.telegram.sendMessage(ctx.chat.id ,text)
-    } 
-    catch(e) 
-    {
-        console.log(e);
-    }
-};
 
-let sendphoto = async function(ctx) {
-    try {
-                
-        await bot.telegram.sendPhoto(ctx.chat.id ,{source: 'site.png'})
-    } 
-    catch(e) 
-    {
-        console.log(e);
-    }
-};
+
 
 
 
@@ -44,41 +23,45 @@ const reload = async function (ctx) {
 
     const page = await browser.newPage();
     await page.setUserAgent(header);
-   
+
     await page.authenticate({ username: process.env.WEB_USERNAME, password: process.env.WEB_PASSWORD });
-   
-    try{
+
+    try {
         await page.goto(process.env.WEB_URL);
 
-    }catch (e)  {
+    } catch (e) {
         console.log(e);
-        sendMessage(e, ctx);    
+        sendMessage(e, ctx);
     }
     await page.screenshot({ path: 'example.png' });
 
 
     const extratedElements = await page.evaluate(() => {
 
-        const elements = document.querySelectorAll('tbody  tr td'); 
+        const elements = document.querySelectorAll('tbody  tr td');
+
+        let region = 13;// a modificar por entrada de usuario
+
         let data = [];
         let arr = [];
         let i = 0;
         for (let element of elements) {
 
-            if (elements.length >2) {
+            if (elements.length > 2) {
 
                 const font = element.innerText;
-                
-                if (font == 13) {
-        
-                    
-                    
-                   i = 17;
+
+                if (font == region) {
+
+
+
+                    i = 17;
                 }
             }
             if (i > 0) {
+
                 data.push(element.innerText);
-                if (data.length == 17 && data[0] == '13' && data[3].length > 5)  {
+                if (data.length == 17 && data[0] == String(region) && data[3].length > 5) {
 
 
                     arr.push(data);
@@ -88,55 +71,57 @@ const reload = async function (ctx) {
                 i--;
             }
 
-        } 
-        
-        return arr;
-    });
-    console.log('resulrtado') ;
-    console.log(extratedElements); 
-        for (let i = 0; i < extratedElements.length; i++) {
-            let text = filterArray(extratedElements[i]);  
-          
-            await timer(3000);
-            
-            let msg = util.inspect(text, {showHidden: false, depth: null,  compact: false});
-            console.log(msg);
-            await sendMessage(msg, ctx);
         }
 
-        
+        return arr;
+    });
+    let sitesArr = [];
+    console.log('resulrtado');
+    console.log(extratedElements);
+    for (let i = 0; i < extratedElements.length; i++) {
+        let text = filterArray(extratedElements[i], ctx);
+        if (text != undefined) {
+
+            let msg = util.inspect(text, { showHidden: false, depth: null, compact: false });
+            sitesArr.push(msg);
+        }
 
 
-   /*  extratedElements.forEach(async element => { 
-        
-        await timer(3000);
-        
-        await  sendMessage((JSON.stringify(element)), ctx);
-        console.log(element); */
-       
-   // });
 
-        
-  await browser.close();  
-   return;
 
-} ; 
+
+        // console.log(msg);
+
+    }
+    await sendArr(sitesArr, ctx);
+
+    let sitesCancel = sitesCanceled();
+
+    if (sitesCancel !== undefined && sitesCancel.length > 0)   {  
+        await sendMessage('Sitios OOS Cancelados ', ctx);
+        await sendArr(sitesCancel, ctx) }
+
+
+    await browser.close();
+    return;
+
+};
 
 const sitequery = async function (ctx, site) {
     const browser = await puppeteer.launch()
 
     const page = await browser.newPage();
     await page.setUserAgent(header);
-   
-    try{
+
+    try {
         await page.goto(`http://200.27.8.220/detalle_sitios_fuera_funciones.php?nodo=${site}`);
 
-    }catch(e){
-            console.log(e);
-            sendMessage(e, ctx);
-        }
+    } catch (e) {
+        console.log(e);
+        sendMessage(e, ctx);
+    }
     await page.screenshot({ path: 'site.png' });
-    await sendphoto( ctx);
+    await sendPhoto(ctx);
     await browser.close();
     return;
 
